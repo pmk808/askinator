@@ -1,106 +1,70 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+  <q-layout view="lHh Lpr lFf" class="gray-background">
+ 
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered side="left">
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
       </q-toolbar>
-    </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
       <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item clickable v-for="item in drawerItems" :key="item.title" @click="handleDrawerItemClick(item)">
+          <q-item-section>
+            <q-item-label>{{ item.title }}</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container :class="leftDrawerOpen ? '' : 'left-margin'">
+
       <router-view />
+  
     </q-page-container>
+
+    <q-card v-if="!leftDrawerOpen"
+      style="position: fixed; bottom: 0; left: 0; width: 80px; height: 100vh; display: flex; flex-direction: column; justify-content: flex-end;">
+      <q-card-section style="text-align: center;">
+        <div style="flex-grow: 1;"></div>
+        <q-icon name="home" size="24px" style="margin-bottom: 15px;"></q-icon>
+        <q-btn flat dense round aria-label="Menu" @click="toggleLeftDrawer">
+          <q-icon name="menu" color="orange" size="24px" style="margin-bottom: 10px;" />
+        </q-btn>
+        <div style="font-size: 12px;">Menu</div>
+      </q-card-section>
+    </q-card>
+
   </q-layout>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+import { ref, onMounted } from 'vue'
 
 defineOptions({
   name: 'MainLayout'
 })
 
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-]
-
 const leftDrawerOpen = ref(false)
 
-function toggleLeftDrawer () {
+onMounted(() => {
+  leftDrawerOpen.value = false;
+})
+
+function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
+
+const drawerItems = [
+  { title: 'Item 1' },
+  { title: 'Item 2' },
+  { title: 'Item 3' }
+]
 </script>
+
+<style scoped>
+.gray-background {
+  background-color: #f2f2f2;
+}
+
+.left-margin {
+  margin-left: 80px;
+}
+</style>
