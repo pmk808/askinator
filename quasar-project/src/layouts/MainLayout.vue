@@ -1,6 +1,14 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="gray-background">
- 
+
+    <q-header class="gray-background">
+      <q-toolbar>
+        <q-toolbar-title class="cyan-text">
+          Askinator
+        </q-toolbar-title>
+      </q-toolbar>
+    </q-header>
+
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered side="left">
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
@@ -16,8 +24,15 @@
 
     <q-page-container :class="leftDrawerOpen ? '' : 'left-margin'">
 
-      <router-view />
-  
+      <q-page-container>
+        <q-page padding>
+          <router-view />
+          <q-page-scroller reverse position="top" :scroll-offset="20" :offset="[0, 18]">
+            <q-btn fab icon="keyboard_arrow_down" color="cyan" />
+          </q-page-scroller>
+        </q-page>
+      </q-page-container>
+
     </q-page-container>
 
     <q-card v-if="!leftDrawerOpen"
@@ -26,12 +41,11 @@
         <div style="flex-grow: 1;"></div>
         <q-icon name="home" size="24px" style="margin-bottom: 15px;"></q-icon>
         <q-btn flat dense round aria-label="Menu" @click="toggleLeftDrawer">
-          <q-icon name="menu" color="orange" size="24px" style="margin-bottom: 10px;" />
+          <q-icon name="menu" color="cyan" size="24px" style="margin-bottom: 10px;" />
         </q-btn>
         <div style="font-size: 12px;">Menu</div>
       </q-card-section>
     </q-card>
-
   </q-layout>
 </template>
 
@@ -64,7 +78,8 @@ const drawerItems = [
   background-color: #f2f2f2;
 }
 
-.left-margin {
-  margin-left: 80px;
+.cyan-text {
+  color: black;
+  font-weight: bold;
 }
 </style>

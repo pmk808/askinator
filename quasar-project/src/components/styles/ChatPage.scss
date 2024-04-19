@@ -1,0 +1,18 @@
+.chat-window {
+    height: 300px; /* Adjust the height as needed */
+    overflow-y: auto;
+  }
+  
+  .chat-message {
+    margin-bottom: 10px;
+  }
+  
+  .sender {
+    font-weight: bold;
+  }
+  
+  .text {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 10px;
+  }
