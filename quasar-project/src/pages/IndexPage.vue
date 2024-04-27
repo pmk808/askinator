@@ -8,7 +8,7 @@
 
 
 <script setup>
-import ChatPage from 'components/ChatPage.vue';
+import ChatPage from './components/ChatPage.vue';
 
 import { ref } from 'vue';
 
