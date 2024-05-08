@@ -15,33 +15,26 @@
 
 <script setup>
 import { ref } from 'vue';
-const messages = [
-    { name: 'ChatGPT', text: 'Hello! How can I assist you today?' },
-    { name: 'User', text: 'Hi, I have a question about your products.' },
-    { name: 'ChatGPT', text: 'Sure, feel free to ask. I\'m here to help!' },
-    { name: 'User', text: 'Do you have this product in different colors?' },
-    { name: 'ChatGPT', text: 'Yes, we offer it in blue, red, and green.' },
-    { name: 'User', text: 'Great, I\'ll take it in blue. Can I order it online?' },
-    { name: 'ChatGPT', text: 'Absolutely! You can order it directly from our website.' },
-    { name: 'User', text: 'Thank you for your help!' },
-    { name: 'ChatGPT', text: 'You\'re welcome! If you have any more questions, feel free to ask.' },
-    { name: 'ChatGPT', text: 'Hello! How can I assist you today?' },
-    { name: 'User', text: 'Hi, I have a question about your products.' },
-    { name: 'ChatGPT', text: 'Sure, feel free to ask. I\'m here to help!' },
-    { name: 'User', text: 'Do you have this product in different colors?' },
-    { name: 'ChatGPT', text: 'Yes, we offer it in blue, red, and green.' },
-    { name: 'User', text: 'Great, I\'ll take it in blue. Can I order it online?' },
-    { name: 'ChatGPT', text: 'Absolutely! You can order it directly from our website.' },
-    { name: 'User', text: 'Thank you for your help!' },
-    { name: 'ChatGPT', text: 'You\'re welcome! If you have any more questions, feel free to ask.' },
-];
+import generateContent from './scripts/index';
+
+const messages = [];
 const userInput = ref('');
 
-const sendMessage = () => {
-  // Add logic to process user input (e.g., update messages)
-  messages.push({ name: 'User', text: userInput.value });
-  userInput.value = ''; // Clear input field after sending
-}
+const sendMessage = async () => {
+  try {
+    // Call generateContent function to get generated messages
+    const generatedMessages = await generateContent();
+    
+    // Add generated messages to the messages array
+    messages.push(...generatedMessages);
+    
+    // Clear user input
+    userInput.value = '';
+  } catch (error) {
+    console.error('Error:', error.message);
+    // Handle errors, e.g., display an error message to the user
+  }
+};
 </script>
 
 <style scoped>
