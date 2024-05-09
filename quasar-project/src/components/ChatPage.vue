@@ -14,27 +14,63 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { ref } from 'vue';
-import generateContent from './scripts/index';
 
-const messages = [];
+// Define the endpoint URL
+const geminiEndpoint = 'https://us-central1-aiplatform.googleapis.com/v1/projects/askinator/locations/us-central1/publishers/google/models/gemini-1.0-pro:streamGenerateContent?alt=sse';
+
+// Define reactive variable for user input
 const userInput = ref('');
 
-const sendMessage = async () => {
+// Define reactive variable for messages
+const messages = ref([]);
+
+// Function to send message
+async function sendMessage() {
+  // Add user message to the messages array
+  messages.value.push({ name: 'User', text: userInput.value });
+
+  // Define the request body
+  const requestBody = {
+    contents: [
+      {
+        role: 'user',
+        parts: [
+          {
+            text: userInput.value,
+          },
+        ],
+      },
+    ],
+    safety_settings: {
+      category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+      threshold: "BLOCK_LOW_AND_ABOVE"
+    },
+    generationConfig: {
+      temperature: 0.7,
+      topP: 0.8,
+      topK: 40,
+      candidateCount: 1,
+      maxOutputTokens: 100,
+    },
+  };
+
   try {
-    // Call generateContent function to get generated messages
-    const generatedMessages = await generateContent();
-    
-    // Add generated messages to the messages array
-    messages.push(...generatedMessages);
-    
-    // Clear user input
-    userInput.value = '';
+    // Send POST request to Gemini API endpoint
+    const response = await axios.post(geminiEndpoint, requestBody);
+
+    // Handle the response data
+    console.log('Response:', response.data);
+    // You can update your UI with the response data here
   } catch (error) {
-    console.error('Error:', error.message);
-    // Handle errors, e.g., display an error message to the user
+    console.error('Error sending message:', error);
+    // Handle errors here
   }
-};
+
+  // Clear user input after sending message
+  userInput.value = '';
+}
 </script>
 
 <style scoped>
