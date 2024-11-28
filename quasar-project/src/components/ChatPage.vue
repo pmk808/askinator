@@ -1,10 +1,13 @@
 <template>
   <div class="q-pa-md row justify-center">
     <div style="width: 100%; max-width: 400px">
+      <!-- Display chat messages -->
       <div class="chat-message" v-for="(message, index) in messages" :key="index">
         <div class="sender">{{ message.name }}</div>
         <div class="text">{{ message.text }}</div>
       </div>
+      
+      <!-- User input and send button -->
       <div class="user-input">
         <input type="text" v-model="userInput" placeholder="Type your message..." />
         <button @click="sendMessage" class="q-btn bg-cyan">Send</button>
@@ -17,18 +20,21 @@
 import axios from 'axios';
 import { ref } from 'vue';
 
-// Define the endpoint URL
-const geminiEndpoint = 'https://us-central1-aiplatform.googleapis.com/v1/projects/askinator/locations/us-central1/publishers/google/models/gemini-1.0-pro:streamGenerateContent?alt=sse';
+// Load sensitive information from environment variables
+const GEMINI_API_ENDPOINT = process.env.VUE_APP_GEMINI_API_ENDPOINT; 
+console.log(
+  process.env.NODE_ENV === 'development'
+    ? `Gemini API Endpoint: ${GEMINI_API_ENDPOINT}`
+    : 'Gemini API Endpoint is loaded from environment variables.'
+);
 
-// Define reactive variable for user input
+// Reactive variables for user input and chat messages
 const userInput = ref('');
-
-// Define reactive variable for messages
 const messages = ref([]);
 
 // Function to send message
 async function sendMessage() {
-  // Add user message to the messages array
+  // Add user's message to the messages array
   messages.value.push({ name: 'User', text: userInput.value });
 
   // Define the request body
@@ -36,16 +42,12 @@ async function sendMessage() {
     contents: [
       {
         role: 'user',
-        parts: [
-          {
-            text: userInput.value,
-          },
-        ],
+        parts: [{ text: userInput.value }],
       },
     ],
     safety_settings: {
-      category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-      threshold: "BLOCK_LOW_AND_ABOVE"
+      category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+      threshold: 'BLOCK_LOW_AND_ABOVE',
     },
     generationConfig: {
       temperature: 0.7,
@@ -57,23 +59,31 @@ async function sendMessage() {
   };
 
   try {
-    // Send POST request to Gemini API endpoint
-    const response = await axios.post(geminiEndpoint, requestBody);
+    // Send POST request to the Gemini API endpoint
+    const response = await axios.post(GEMINI_API_ENDPOINT, requestBody);
 
-    // Handle the response data
-    console.log('Response:', response.data);
-    // You can update your UI with the response data here
+    // Process the response data
+    const reply = response.data?.content ?? 'No reply received.';
+    console.log('API Reply:', reply);
+
+    // Add the response message to the messages array
+    messages.value.push({ name: 'Gemini', text: reply });
   } catch (error) {
-    console.error('Error sending message:', error);
-    // Handle errors here
+    // Log error safely in production
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error sending message:', error);
+    } else {
+      console.error('An error occurred while sending the message.');
+    }
   }
 
-  // Clear user input after sending message
+  // Clear user input after sending
   userInput.value = '';
 }
 </script>
 
 <style scoped>
+/* Scoped styling for chat UI */
 @import url('./styles/ChatPage.scss');
 
 .user-input {
